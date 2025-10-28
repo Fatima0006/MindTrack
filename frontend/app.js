@@ -84,16 +84,3 @@ signInForm.addEventListener('submit', (e) => {
       alert(error.message);
     });
 });
-
-
-/CHECAR/
-document.addEventListener("DOMContentLoaded", showCoffees);
-
-if("serviceWorker" in navigator) {
-  window.addEventListener("load", function(){
-    navigator.serviceWorker
-    .register("/serviceWorker.js")
-    .then(res => console.log("service worker registred"))
-    .catch(err => console.log("service worker not regitred", err));
-  });
-}
