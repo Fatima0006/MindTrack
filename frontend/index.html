@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style2.css" />
+  <link rel="manifest" href="manifest.json">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <title>MindTrack</title>
+
+  <style>
+    #connectionAlert {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      text-align:center;
+      padding:10px 0;
+      font-weight:500;
+      z-index:1050;
+      transition: top 0.3s ease;
+      color:white;
+    }
+    body { margin:0; font-family: 'Poppins', sans-serif; }
+    .navbar { transition: margin-top 0.3s ease; }
+  </style>
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<div class="container">
+  <div class="forms-container">
+    <div class="signin-signup">
+      <form id="sign-in-form" class="sign-in-form">
+        <h2 class="title">Inicio de Sesión</h2>
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Correo Electrónico" id="signin-email" list="email-history"/>
+          <datalist id="email-history"></datalist>
+        </div>
+        <div class="input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Contraseña" id="signin-password" />
+        </div>
+        <p style="text-align:right; margin:5px 0;">
+          <a href="#" id="forgot-password" style="color:#e18125; text-decoration:none;">¿Olvidaste tu contraseña?</a>
+        </p>
+        <input type="submit" value="Iniciar Sesión" class="btn solid"/>
+      </form>
+
+      <form id="sign-up-form" class="sign-up-form">
+        <h2 class="title">Registrarse</h2>
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Nombre de Usuario" />
+        </div>
+        <div class="input-field">
+          <i class="fas fa-envelope"></i>
+          <input type="email" placeholder="Correo Electrónico" id="signup-email" />
+        </div>
+        <div class="input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Contraseña" />
+        </div>
+        <input type="submit" class="btn" value="Registrarse"/>
+      </form>
+    </div>
+  </div>
+
+  <div style="position:fixed; top:15px; right:20px; z-index:1051;">
+    <a href="home.html" style="
+      background-color:#24345c;
+      color:white;
+      padding:8px 16px;
+      border-radius:20px;
+      text-decoration:none;
+      font-weight:500;
+      transition:0.3s;
+    " onmouseover="this.style.backgroundColor='#e18125'" onmouseout="this.style.backgroundColor='#24345c'">
+      Inicio
+    </a>
+  </div>
+
+  <div class="panels-container">
+    <div class="panel left-panel">
+      <div class="content">
+        <h3>¿Eres nuevo aquí?</h3>
+        <p>Regístrate para empezar a usar la app.</p>
+        <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+     
+    <div class="panel right-panel">
+      <div class="content">
+        <h3>¿Ya tienes cuenta?</h3>
+        <p>Inicia sesión para continuar.</p>
+        <button class="btn transparent" id="sign-in-btn">Iniciar Sesión</button>
+      
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsoJC4FH-BMTlZFf6L_AtlhRlMCmmFV3c",
+    authDomain: "mindtrack-58514.firebaseapp.com",
+    projectId: "mindtrack-58514",
+    storageBucket: "mindtrack-58514.firebasestorage.app",
+    messagingSenderId: "138584951675",
+    appId: "1:138584951675:web:38f4ce06df193d941d4bde",
+    measurementId: "G-ZZNND9RBYF"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let wasOffline = !navigator.onLine;
+  const alertDiv = document.getElementById('connectionAlert');
+
+  function showConnectionAlert(isOnline){
+    if(isOnline){
+      alertDiv.style.backgroundColor = '#2ecc71';
+      alertDiv.innerText = 'Conectado';
+      alertDiv.style.display = 'block';
+      setTimeout(() => { alertDiv.style.display = 'none'; }, 2500);
+    } else {
+      alertDiv.style.backgroundColor = '#e74c3c';
+      alertDiv.innerText = 'Sin conexión a Internet';
+      alertDiv.style.display = 'block';
+    }
+  }
+
+  function handleConnectionChange() {
+    showConnectionAlert(navigator.onLine);
+    wasOffline = !navigator.onLine;
+  }
+
+  window.addEventListener('online', handleConnectionChange);
+  window.addEventListener('offline', handleConnectionChange);
+  handleConnectionChange();
+
+  const signinEmail = document.getElementById("signin-email");
+  const emailHistory = document.getElementById("email-history");
+
+  signinEmail.addEventListener("focus", () => {
+    const history = JSON.parse(localStorage.getItem("emailHistory") || "[]");
+    emailHistory.innerHTML = "";
+    history.forEach(email => {
+      const option = document.createElement("option");
+      option.value = email;
+      emailHistory.appendChild(option);
+    });
+  });
+
+  function saveEmailHistory(email){
+    let history = JSON.parse(localStorage.getItem("emailHistory") || "[]");
+    if(email && !history.includes(email)){
+      history.push(email);
+      localStorage.setItem("emailHistory", JSON.stringify(history));
+    }
+  }
+
+  const adminEmail = "admin@mindtrack.com";
+  const adminPassword = "Admin123!";
+  const adminUsername = "Administrador";
+
+  db.collection("users").where("email", "==", adminEmail).get()
+    .then(snapshot => {
+      if(snapshot.empty){
+        auth.createUserWithEmailAndPassword(adminEmail, adminPassword)
+          .then(userCredential => {
+            const user = userCredential.user;
+            db.collection("users").doc(user.uid).set({
+              username: adminUsername,
+              email: adminEmail,
+              role: "admin"
+            });
+          });
+      }
+    });
+
+  const signUpForm = document.getElementById('sign-up-form');
+  const signInForm = document.getElementById('sign-in-form');
+
+  signUpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = signUpForm.querySelector('input[type="text"]').value;
+    const email = signUpForm.querySelector('input[type="email"]').value;
+    const password = signUpForm.querySelector('input[type="password"]').value;
+
+    auth.createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        db.collection("users").doc(user.uid).set({ username, email, role: "user" })
+          .then(() => {
+            alert("Usuario registrado!");
+            signUpForm.reset();
+            saveEmailHistory(email);
+          })
+          .catch(err => alert(err.message));
+      })
+      .catch(err => alert(err.message));
+  });
+
+  signInForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = signinEmail.value;
+    const password = document.getElementById("signin-password").value;
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        db.collection("users").doc(user.uid).get()
+          .then(doc => {
+            if(doc.exists){
+              const data = doc.data();
+              localStorage.setItem("username", data.username);
+              saveEmailHistory(email);
+              if(data.role === "admin"){
+                window.location.href = "admin-dashboard.html";
+              } else {
+                window.location.href = "dashboard.html";
+              }
+            } else {
+              alert("No se encontró información del usuario.");
+            }
+          })
+          .catch(err => alert(err.message));
+      })
+      .catch(err => alert(err.message));
+  });
+
+  const forgotPasswordLink = document.getElementById("forgot-password");
+  forgotPasswordLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = signinEmail.value.trim();
+    if(!email){
+      alert("Por favor ingresa tu correo para recuperar la contraseña.");
+      return;
+    }
+    auth.sendPasswordResetEmail(email)
+      .then(() => {
+        alert(`Se ha enviado un correo a ${email} para restablecer la contraseña.`);
+      })
+      .catch(err => alert(err.message));
+  });
+
+  const signUpBtn = document.getElementById('sign-up-btn');
+  const signInBtn = document.getElementById('sign-in-btn');
+  const container = document.querySelector('.container');
+
+  signUpBtn.addEventListener('click', () => container.classList.add('sign-up-mode'));
+  signInBtn.addEventListener('click', () => container.classList.remove('sign-up-mode'));
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./serviceWorker.js')
+      .then(() => console.log('Service Worker registrado.'))
+      .catch(err => console.error('Error registrando SW:', err));
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'OFFLINE') {
+        showConnectionAlert(false);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

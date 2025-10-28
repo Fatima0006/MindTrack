@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindTrack</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;display:flex;min-height:100vh;background-color:#f9f9fb;flex-direction:column;}
+.sidebar{width:250px;background-color:#fff;border-right:3px solid #24345c;transition:width 0.3s;overflow:hidden;box-shadow:2px 0 10px rgba(36,52,92,0.1);}
+.sidebar.collapsed{width:70px;}
+.sidebar .logo{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;font-size:20px;font-weight:600;color:#24345c;border-bottom:2px solid #24345c;}
+.logo-img{width:50px;height:50px;object-fit:contain;}
+.sidebar ul{list-style:none;margin-top:20px;}
+.sidebar ul li{padding:15px 20px;display:flex;align-items:center;cursor:pointer;transition:all 0.3s ease;color:#24345c;font-weight:500;}
+.sidebar ul li:hover{background-color:rgba(225,129,37,0.15);border-left:4px solid #e18125;}
+.sidebar ul li i{font-size:20px;color:#e18125;margin-right:15px;width:25px;text-align:center;}
+.sidebar ul li span{white-space:nowrap;}
+.sidebar.collapsed ul li span{display:none;}
+.main{flex:1;display:flex;flex-direction:column;}
+header{background-color:#ffffff;border-bottom:3px solid #24345c;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(36,52,92,0.1);}
+header .menu-toggle{font-size:26px;color:#24345c;cursor:pointer;transition:color 0.3s;}
+header .menu-toggle:hover{color:#e18125;}
+header .user-info{display:flex;align-items:center;gap:12px;}
+header .user-info span{color:#24345c;font-weight:600;}
+.content{padding:30px;flex:1;overflow-y:auto;background-color:#fff;margin-top:20px;}
+h2{text-align:center;color:#24345c;margin-bottom:20px;}
+.profile-card{max-width:500px;margin:0 auto;padding:25px;border:2px solid #24345c;border-radius:15px;background:white;box-shadow:0 4px 12px rgba(36,52,92,0.1);}
+.profile-field{display:flex;align-items:center;justify-content:space-between;margin:10px 0;}
+.profile-field input{width:70%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px; display:none;}
+.profile-field span{font-size:14px;color:#444;}
+.profile-field button{padding:5px 12px;background:#e18125;color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;}
+.profile-field button:hover{background:#cf731c;}
+#logoutModal{display:none;position:fixed;z-index:200;left:0;top:0;width:100%;height:100%;background:rgba(36,52,92,0.6);justify-content:center;align-items:center;}
+.modal-content{background:#fff;border:2px solid #24345c;border-radius:12px;padding:30px;text-align:center;max-width:400px;width:90%;}
+.modal-buttons{display:flex;justify-content:center;gap:15px;margin-top:20px;}
+.btn-confirm{background-color:#e18125;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
+.btn-cancel{background-color:#24345c;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
+.btn-confirm:hover{background:#cf731c;}
+.btn-cancel:hover{background:#1e2d4f;}
+h2{text-align:center;color:#24345c;margin-bottom:20px;font-size:26px;}
+.profile-field span{font-size:16px;color:#444;}
+.profile-field button{padding:6px 14px;font-size:14px;background:#e18125;color:white;border:none;border-radius:8px;cursor:pointer;}
+header .user-info span{color:#24345c;font-weight:600;font-size:18px;}
+#connectionAlert {
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  text-align:center;
+  padding:10px 0;
+  font-weight:500;
+  z-index:1050;
+  color:white;
+  transition: top 0.3s ease;
+}
+
+footer {
+  border-top:3px solid #24345c;
+  background:#fff;
+  color:#24345c;
+  padding:40px 20px 20px;
+  text-align:center;
+  margin-top:40px;
+}
+footer .container {
+  max-width:1000px;
+  margin:auto;
+}
+footer .row {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:30px;
+}
+footer h5 {
+  color:#24345c;
+  margin-bottom:10px;
+}
+footer a {
+  color:#24345c;
+  text-decoration:none;
+}
+footer a:hover {
+  color:#e18125;
+}
+</style>
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<div style="display:flex;flex:1;">
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="MindTrack Logo" class="logo-img">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="dashboard.html"><i>🏠</i><span>Inicio</span></li>
+    <li data-href="profile.html"><i>⚙️</i><span>Perfil</span></li>
+    <li id="logoutSidebar"><i>🚪</i><span>Cerrar sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+<header>
+  <div class="menu-toggle" id="menuToggle">☰</div>
+  <div class="user-info"><span id="user-name">Usuario</span></div>
+</header>
+
+<div class="content">
+<h2>Perfil de Usuario</h2>
+<div class="profile-card">
+  <div class="profile-field">
+    <span>Nombre:</span>
+    <span id="usernameDisplay"></span>
+    <input type="text" id="usernameInput">
+    <button onclick="editField('username')">Editar</button>
+  </div>
+
+  <div class="profile-field">
+    <span>Correo:</span>
+    <span id="emailDisplay"></span>
+  </div>
+
+  <div class="profile-field">
+    <span>Edad:</span>
+    <span id="ageDisplay"></span>
+    <input type="number" id="ageInput" min="6" max="12">
+    <button onclick="editField('age')">Editar</button>
+  </div>
+</div>
+</div>
+
+<footer class="text-dark pt-5 pb-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-3">
+        <h5>MindTrack</h5>
+        <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+      </div>
+      <div class="col-lg-3 mb-3">
+        <h5>Enlaces</h5>
+        <ul class="list-unstyled footer-links">
+          <li><a href="dashboard.html">Inicio</a></li>
+          <li><a href="profile.html">Perfil</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 mb-3">
+        <h5>Contacto</h5>
+        <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+        <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+      </div>
+    </div>
+    <div class="text-center mt-3">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+</div>
+</div>
+
+<div id="logoutModal">
+  <div class="modal-content">
+    <h3>¿Deseas cerrar sesión?</h3>
+    <div class="modal-buttons">
+      <button id="confirmLogout" class="btn-confirm">Sí, salir</button>
+      <button id="cancelLogout" class="btn-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCsoJC4FH-BMTlZFf6L_AtlhRlMCmmFV3c",
+  authDomain: "mindtrack-58514.firebaseapp.com",
+  projectId: "mindtrack-58514",
+  storageBucket: "mindtrack-58514.appspot.com",
+  messagingSenderId: "138584951675",
+  appId: "1:138584951675:web:38f4ce06df193d941d4bde"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', ()=> sidebar.classList.toggle('collapsed'));
+
+const usernameDisplay = document.getElementById('user-name');
+const usernameSpan = document.getElementById('usernameDisplay');
+const usernameInput = document.getElementById('usernameInput');
+const emailDisplay = document.getElementById('emailDisplay');
+const ageSpan = document.getElementById('ageDisplay');
+const ageInput = document.getElementById('ageInput');
+const editButtons = document.querySelectorAll('.profile-field button');
+
+let userDocId = null;
+const storedUser = localStorage.getItem('username');
+if(!storedUser) window.location.href='index.html';
+
+const alertDiv = document.getElementById('connectionAlert');
+
+function showConnectionAlert(isOnline){
+  if(isOnline){
+    alertDiv.style.backgroundColor = '#2ecc71';
+    alertDiv.innerText = 'Conectado';
+    alertDiv.style.display = 'block';
+    setTimeout(() => { alertDiv.style.display = 'none'; }, 2500);
+  } else {
+    alertDiv.style.backgroundColor = '#e74c3c';
+    alertDiv.innerText = 'Sin conexión a Internet';
+    alertDiv.style.display = 'block';
+  }
+}
+
+window.addEventListener('online', ()=> {
+  showConnectionAlert(true);
+  loadUserData();
+});
+window.addEventListener('offline', ()=> showConnectionAlert(false));
+
+function displayUserData(data){
+  usernameDisplay.textContent = data.username;
+  usernameSpan.textContent = data.username;
+  emailDisplay.textContent = data.email;
+  ageSpan.textContent = data.age || '';
+}
+
+function loadUserData(){
+  if(!navigator.onLine){
+    const cachedUser = JSON.parse(localStorage.getItem('cachedUser'));
+    if(cachedUser) displayUserData(cachedUser);
+    editButtons.forEach(btn=> btn.style.display='none');
+    return;
+  }
+
+  db.collection('users').where('username','==',storedUser).get().then(snapshot=>{
+    if(!snapshot.empty){
+      const doc = snapshot.docs[0];
+      userDocId = doc.id;
+      displayUserData(doc.data());
+      localStorage.setItem('cachedUser', JSON.stringify(doc.data()));
+      editButtons.forEach(btn=> btn.style.display='inline-block');
+    } else {
+      displayUserData({username:'No encontrado', email:'-', age:'-'});
+      editButtons.forEach(btn=> btn.style.display='none');
+    }
+  }).catch(err=>editButtons.forEach(btn=> btn.style.display='none'));
+}
+loadUserData();
+
+function editField(field){
+  if(!navigator.onLine) return;
+  if(field==='username'){
+    usernameInput.value = usernameSpan.textContent;
+    usernameSpan.style.display='none';
+    usernameInput.style.display='inline-block';
+    usernameInput.focus();
+    usernameInput.onblur = ()=> saveField(field);
+  } else if(field==='age'){
+    ageInput.value = ageSpan.textContent;
+    ageSpan.style.display='none';
+    ageInput.style.display='inline-block';
+    ageInput.focus();
+    ageInput.onblur = ()=> saveField(field);
+  }
+}
+
+function saveField(field){
+  let value;
+  if(field==='username'){
+    value = usernameInput.value.trim();
+    if(!value){ usernameInput.focus(); return; }
+  } else if(field==='age'){
+    value = parseInt(ageInput.value);
+    if(isNaN(value) || value<6 || value>12){ ageInput.focus(); return; }
+  }
+  db.collection('users').doc(userDocId).update({
+    [field]: value,
+    phone: firebase.firestore.FieldValue.delete(),
+    address: firebase.firestore.FieldValue.delete()
+  }).then(()=>{
+    if(field==='username'){ usernameDisplay.textContent=value; usernameSpan.textContent=value; localStorage.setItem('username',value);}
+    if(field==='age'){ ageSpan.textContent=value; }
+    if(field==='username') usernameInput.style.display='none'; else ageInput.style.display='none';
+    if(field==='username') usernameSpan.style.display='inline'; else ageSpan.style.display='inline';
+  });
+}
+
+const logoutSidebar = document.getElementById('logoutSidebar');
+const logoutModal = document.getElementById('logoutModal');
+const confirmLogout = document.getElementById('confirmLogout');
+const cancelLogout = document.getElementById('cancelLogout');
+
+logoutSidebar.addEventListener('click', ()=> logoutModal.style.display='flex');
+confirmLogout.addEventListener('click', ()=>{
+  localStorage.removeItem('username');
+  window.location.href='index.html';
+});
+cancelLogout.addEventListener('click', ()=> logoutModal.style.display='none');
+window.addEventListener('click', e=> { if(e.target===logoutModal) logoutModal.style.display='none'; });
+
+document.querySelectorAll('.sidebar ul li[data-href]').forEach(item=>{
+  item.addEventListener('click', ()=> window.location.href=item.getAttribute('data-href'));
+});
+</script>
+</body>
+</html>

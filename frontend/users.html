@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindTrack</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; display: flex; min-height: 100vh; background-color: #f9f9fb; flex-direction: column; }
+
+.sidebar { width: 250px; background-color: #ffffff; border-right: 3px solid #24345c; transition: width 0.3s; overflow: hidden; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; }
+.sidebar.collapsed { width: 70px; }
+.sidebar .logo { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; font-size: 20px; font-weight: 600; color: #24345c; border-bottom: 2px solid #24345c; }
+.logo-img { width: 50px; height: 50px; object-fit: contain; }
+.sidebar ul { list-style: none; margin-top: 20px; flex: 1; }
+.sidebar ul li { padding: 15px 20px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s ease; color: #24345c; font-weight: 500; }
+.sidebar ul li:hover { background-color: rgba(225, 129, 37, 0.15); border-left: 4px solid #e18125; }
+.sidebar ul li i { font-size: 20px; color: #e18125; margin-right: 15px; width: 25px; text-align: center; }
+.sidebar ul li span { white-space: nowrap; }
+.sidebar.collapsed ul li span { display: none; }
+
+.main { margin-left: 250px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s; }
+.sidebar.collapsed ~ .main { margin-left: 70px; }
+
+header { background-color: #ffffff; border-bottom: 3px solid #24345c; padding: 15px 25px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(36, 52, 92, 0.1); justify-content: space-between; }
+header .menu-toggle { font-size: 26px; color: #24345c; cursor: pointer; transition: color 0.3s; }
+header .menu-toggle:hover { color: #e18125; }
+header .user-info span { font-size: 20px; font-weight: 600; color:#24345c; }
+
+.content { padding: 30px; flex: 1; overflow-y: auto; background-color: #ffffff; }
+h2.section-title { color: #24345c; margin: 25px 0 15px; cursor:pointer; font-weight: 600; font-size:24px; display:flex; justify-content: space-between; align-items:center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 10px; }
+.card { background: white; border-radius: 15px; padding: 25px; border: 2px solid #24345c; box-shadow: 0 4px 12px rgba(36, 52, 92, 0.1); transition: all 0.3s ease; text-align: center; }
+.card:hover { transform: translateY(-8px); border-color: #e18125; box-shadow: 0 8px 20px rgba(36, 52, 92, 0.2); }
+.card h3 { color: #24345c; margin-bottom: 10px; font-size: 18px; font-weight: 600; }
+.card p, .card input, .card select { color: #444; font-size: 16px; margin:5px 0; width:100%; border:none; text-align:center; background:none; }
+.card input { border-bottom:1px solid #ccc; padding:4px; }
+.card button { margin-top:10px; padding:6px 14px; font-size:14px; background:#e18125; color:white; border:none; border-radius:8px; cursor:pointer; }
+.card button:hover { background:#cf731c; }
+.card .btn-delete { background:#b93030; margin-left:5px; }
+.card .btn-delete:hover { background:#982525; }
+
+.add-btn { background:#2ecc71; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:14px; margin-left:10px;}
+.add-btn:hover { background:#27ae60; }
+
+footer { border-top:3px solid #24345c; background:#fff; color:#24345c; padding:40px 20px 20px; text-align:center; margin-top:40px; }
+footer .container { max-width:1000px; margin:auto; }
+footer .row { display:flex; flex-wrap:wrap; justify-content:space-between; gap:30px; }
+footer h5 { color:#24345c; margin-bottom:10px; }
+footer a { color:#24345c; text-decoration:none; }
+footer a:hover { color:#e18125; }
+
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(36, 52, 92, 0.6); justify-content: center; align-items: center; }
+.modal-content { background: #fff; border: 2px solid #24345c; border-radius: 12px; padding: 30px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+.modal-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 15px; }
+.modal-content h3 { color: #24345c; margin-bottom: 10px; }
+.modal-content p { color: #555; font-size: 15px; margin-bottom: 25px; }
+.modal-buttons { display: flex; justify-content: center; gap: 15px; }
+.btn-confirm, .btn-cancel { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; border:none; }
+.btn-confirm { background-color: #e18125; color:white; }
+.btn-cancel { background-color: #24345c; color:white; }
+
+@media (max-width: 768px) {
+  .sidebar { position: absolute; z-index: 100; left: -250px; }
+  .sidebar.collapsed { left: 0; width: 250px; }
+  .main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="MindTrack Logo" class="logo-img">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="admin-dashboard.html"><i>🏠</i><span>Inicio</span></li>
+    <li data-href="users.html"><i>👥</i><span>Usuarios</span></li>
+    <li id="logoutSidebar"><i>🚪</i><span>Cerrar sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <header>
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info"><span id="user-display"></span></div>
+  </header>
+  
+  <div class="content" id="content">
+    <h2>Panel de Administración</h2>
+
+    <h2 class="section-title">
+      🧠 Ejercicios Disponibles
+      <button class="add-btn" onclick="addEmptyCard('exercise')">+ Agregar</button>
+    </h2>
+    <div class="cards" id="exercisesContainer"></div>
+
+    <h2 class="section-title">
+      📆 Sesiones Recientes
+      <button class="add-btn" onclick="addEmptyCard('session')">+ Agregar</button>
+    </h2>
+    <div class="cards" id="sessionsContainer"></div>
+  </div>
+
+  <footer class="text-dark pt-5 pb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <h5>MindTrack</h5>
+          <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+        </div>
+        <div class="col-lg-3 mb-3">
+          <h5>Enlaces</h5>
+          <ul class="list-unstyled footer-links">
+            <li><a href="admin-dashboard.html">Inicio</a></li>
+            <li><a href="users.html">Usuarios</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 mb-3">
+          <h5>Contacto</h5>
+          <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+          <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+        </div>
+      </div>
+      <div class="text-center mt-3">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+    </div>
+  </footer>
+</div>
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modal-title">Alerta</h3>
+    <p id="modal-message"></p>
+    <div class="modal-buttons">
+      <button id="modal-ok" class="btn-confirm">Aceptar</button>
+      <button id="modal-cancel" class="btn-cancel" style="display:none;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', ()=> sidebar.classList.toggle('collapsed'));
+
+const username = localStorage.getItem("username");
+if(username){ document.getElementById("user-display").textContent = username; } 
+else { window.location.href='index.html'; }
+
+document.querySelectorAll('ul li[data-href]').forEach(item=>{ item.addEventListener('click', ()=> window.location.href=item.getAttribute('data-href')); });
+
+let exercises = [
+  {name:"Memoria Visual", duration:"10", level:"Básico", objective:"Mejorar memoria y concentración"},
+  {name:"Razonamiento Lógico", duration:"15", level:"Intermedio", objective:"Desarrollar habilidades de lógica"},
+  {name:"Atención Sostenida", duration:"12", level:"Básico", objective:"Mejorar la concentración y foco"}
+];
+let sessions = [
+  {name:"Sesión Matutina", date:"2025-10-20", duration:"25", exercises:"Memoria Visual, Atención Sostenida", result:"85% aciertos"},
+  {name:"Sesión Tarde", date:"2025-10-19", duration:"30", exercises:"Razonamiento Lógico, Memoria Visual", result:"90% aciertos"}
+];
+
+function renderExercises(){
+  const container = document.getElementById("exercisesContainer");
+  container.innerHTML="";
+  exercises.forEach((ex,index)=>{
+    const card = document.createElement("div"); card.className="card";
+    card.innerHTML=`
+      <h3>${ex.name}</h3>
+      <p><strong>Duración:</strong> <input type="text" value="${ex.duration} min"></p>
+      <p><strong>Nivel:</strong> <input type="text" value="${ex.level}"></p>
+      <p><strong>Objetivo:</strong> <input type="text" value="${ex.objective}"></p>
+      <button onclick="saveCard('exercise',${index})">Guardar</button>
+      <button class="btn-delete" onclick="deleteCard('exercise',${index})">Eliminar</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderSessions(){
+  const container = document.getElementById("sessionsContainer");
+  container.innerHTML="";
+  sessions.forEach((s,index)=>{
+    const card = document.createElement("div"); card.className="card";
+    card.innerHTML=`
+      <h3>${s.name}</h3>
+      <p><strong>Fecha:</strong> <input type="date" value="${s.date}"></p>
+      <p><strong>Duración:</strong> <input type="text" value="${s.duration} min"></p>
+      <p><strong>Ejercicios:</strong> <input type="text" value="${s.exercises}"></p>
+      <p><strong>Resultado:</strong> <input type="text" value="${s.result}"></p>
+      <button onclick="saveCard('session',${index})">Guardar</button>
+      <button class="btn-delete" onclick="deleteCard('session',${index})">Eliminar</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function saveCard(type,index){
+  if(type==='exercise'){ exercises[index]={
+    name: exercises[index].name,
+    duration: document.querySelectorAll("#exercisesContainer .card input")[index*3].value,
+    level: document.querySelectorAll("#exercisesContainer .card input")[index*3+1].value,
+    objective: document.querySelectorAll("#exercisesContainer .card input")[index*3+2].value
+  }; renderExercises(); showAlert("Ejercicio actualizado correctamente.","¡Éxito!"); }
+  else{ sessions[index]={
+    name:sessions[index].name,
+    date: document.querySelectorAll("#sessionsContainer .card input")[index*4].value,
+    duration: document.querySelectorAll("#sessionsContainer .card input")[index*4+1].value,
+    exercises: document.querySelectorAll("#sessionsContainer .card input")[index*4+2].value,
+    result: document.querySelectorAll("#sessionsContainer .card input")[index*4+3].value
+  }; renderSessions(); showAlert("Sesión actualizada correctamente.","¡Éxito!"); }
+}
+
+function deleteCard(type,index){
+  showAlert("¿Deseas eliminar este elemento?","Confirmar",true,(ok)=>{
+    if(ok){ if(type==='exercise'){ exercises.splice(index,1); renderExercises(); } 
+           else{ sessions.splice(index,1); renderSessions(); } }
+  });
+}
+
+function addEmptyCard(type){
+  if(type==='exercise'){ exercises.push({name:"Nuevo Ejercicio",duration:"0",level:"Básico",objective:""}); renderExercises(); }
+  else{ sessions.push({name:"Nueva Sesión",date:"2025-10-20",duration:"0",exercises:"",result:""}); renderSessions(); }
+}
+
+renderExercises();
+renderSessions();
+
+// Modal de alerta
+const alertModal = document.getElementById('alertModal');
+const modalTitle = document.getElementById('modal-title');
+const modalMessage = document.getElementById('modal-message');
+const modalOk = document.getElementById('modal-ok');
+const modalCancel = document.getElementById('modal-cancel');
+
+function showAlert(message,title="Alerta",withCancel=false,callback=null){
+  modalTitle.textContent = title;
+  modalMessage.innerHTML = message;
+  modalCancel.style.display = withCancel?"inline-block":"none";
+  alertModal.style.display="flex";
+  modalOk.onclick=()=>{ alertModal.style.display="none"; if(callback) callback(true); };
+  modalCancel.onclick=()=>{ alertModal.style.display="none"; if(callback) callback(false); };
+}
+
+document.getElementById("logoutSidebar").addEventListener("click",()=>{
+  showAlert("¿Deseas cerrar sesión?","Confirmar",true,(ok)=>{
+    if(ok){ localStorage.removeItem("username"); window.location.href="index.html"; }
+  });
+});
+</script>
+</body>
+</html>

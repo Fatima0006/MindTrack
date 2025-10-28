@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MindTrack</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+<link rel="manifest" href="/Integradora3/frontend/manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;display:flex;min-height:100vh;background-color:#f9f9fb}
+.sidebar{width:250px;background:#fff;border-right:3px solid #24345c;transition:width .3s;overflow:hidden;box-shadow:2px 0 10px rgba(36,52,92,.1)}
+.sidebar.collapsed{width:70px}
+.sidebar .logo{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;font-size:20px;font-weight:600;color:#24345c;border-bottom:2px solid #24345c}
+.logo-img{width:40px;height:40px;object-fit:contain} 
+.sidebar ul{list-style:none;margin-top:20px}
+.sidebar ul li{padding:15px 20px;display:flex;align-items:center;cursor:pointer;transition:all .3s;color:#24345c;font-weight:500}
+.sidebar ul li:hover{background:rgba(225,129,37,.15);border-left:4px solid #e18125}
+.sidebar ul li i{font-size:20px;color:#e18125;margin-right:15px;width:25px;text-align:center}
+.sidebar ul li span{white-space:nowrap}
+.sidebar.collapsed ul li span{display:none}
+.main{flex:1;display:flex;flex-direction:column}
+header{background:#fff;border-bottom:3px solid #24345c;padding:15px 25px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(36,52,92,.1);transition:margin-top .25s ease}
+header .menu-toggle{font-size:26px;color:#24345c;cursor:pointer}
+header .menu-toggle:hover{color:#e18125}
+header .user-info{display:flex;align-items:center;gap:12px}
+header .user-info span{color:#24345c;font-weight:600}
+header .user-info a{background:#24345c;color:#fff;padding:8px 14px;border-radius:20px;text-decoration:none;font-weight:500}
+header .user-info a:hover{background:#e18125}
+#connectionAlert{display:none;position:fixed;top:-60px;left:0;width:100%;text-align:center;padding:12px 0;font-weight:600;z-index:1100;color:#fff;transition:top .35s ease}
+.content-wrapper{padding:20px;flex:1;overflow:auto;display:flex;flex-direction:column;align-items:stretch;background:transparent}
+.topbar{display:none}
+@media(min-width:992px){.topbar{display:block}}
+.carousel-inner img{max-width:80%;height:auto;margin:0 auto} 
+.carousel-caption{left:50%;transform:translateX(-50%);text-align:center}
+.carousel-control-prev-icon,.carousel-control-next-icon{background-color:#e18125;border-radius:50%;width:45px;height:45px;background-size:50% 50%}
+.carousel-control-prev-icon:hover,.carousel-control-next-icon:hover{background-color:#24345c}
+h1,h2,h3,h4,h5,h6{color:#24345c}
+p,a,span{color:#e18125}
+.service-item{background:#fff;border:2px solid #24345c;border-radius:10px;padding:15px;transition:all .4s}
+.service-item:hover{transform:translateY(-10px);box-shadow:0 10px 25px rgba(36,52,92,.2);border-color:#e18125}
+.service-item h5{font-weight:600;margin-bottom:10px;color:#24345c}
+.service-item p{color:#333}
+footer{border-top:3px solid #24345c;background:#fff;padding:30px 20px;color:#24345c}
+.footer-links a{color:#e18125;text-decoration:none}
+.footer-links a:hover{color:#24345c}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+@media(max-width:768px){.sidebar{position:fixed;left:-250px;top:0;height:100%;z-index:1050}.sidebar.collapsed{left:0;width:250px}}
+.brand-small{display:none}
+@media(max-width:500px){.brand-small{display:inline-block}}
+</style>
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" class="logo-img" alt="logo">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="home.html"><i>🏠</i><span>Inicio</span></li>
+    <li data-href="about.html"><i>📖</i><span>Sobre MindTrack</span></li>
+   <!-- <li data-href="resources.html"><i>🧠</i><span>Recursos</span></li>-->
+    <li data-href="index.html"><i>🔑</i><span>Iniciar Sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <header id="mainHeader">
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info">
+      <span class="brand-small">MindTrack</span>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <div class="container-fluid topbar py-2 d-none d-lg-block">
+      <div class="container d-flex justify-content-between">
+        <div><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</div>
+        <div><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</div>
+      </div>
+    </div>
+
+    <div id="carouselMind" class="carousel slide mt-3" data-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img class="d-block" src="img/carrusel-1.jpg" alt="Bienvenida">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase">Descubre</h4>
+            <h1 class="display-3">MindTrack, tu aliado en bienestar</h1>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img class="d-block" src="img/carrusel-2.jpg" alt="Seguimiento">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase">Siente</h4>
+            <h1 class="display-3">Controla tus emociones</h1>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img class="d-block" src="img/carrusel-3.jpg" alt="Recursos">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase">Explora</h4>
+            <h1 class="display-3">Recursos y ejercicios cognitivos</h1>
+          </div>
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carouselMind" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </a>
+      <a class="carousel-control-next" href="#carouselMind" role="button" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </a>
+    </div>
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h6 class="text-uppercase" style="letter-spacing:5px;color:#24345c">Funciones</h6>
+        <h1 style="color:#24345c">Qué puedes hacer con MindTrack</h1>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-heartbeat mb-4" style="color:#e18125"></i>
+            <h5>Seguimiento emocional</h5>
+            <p>Mide y registra tu estado de ánimo diario para identificar patrones y progresos.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-book-open mb-4" style="color:#e18125"></i>
+            <h5>Recursos cognitivos</h5>
+            <p>Accede a ejercicios y guías para fortalecer tu salud mental y habilidades cognitivas.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-user-shield mb-4" style="color:#e18125"></i>
+            <h5>Privacidad y seguridad</h5>
+            <p>Todos tus datos están protegidos con las mejores prácticas de seguridad digital.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-dark pt-5 pb-3" style="border-top:3px solid #24345c;background:#fff">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 mb-3">
+            <h5 style="color:#24345c">MindTrack</h5>
+            <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Enlaces</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="home.html">Inicio</a></li>
+              <li><a href="about.html">Sobre MindTrack</a></li>
+              <li><a href="resources.html">Recursos</a></li>
+              <li><a href="index.html">Iniciar Sesión</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Contacto</h5>
+            <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+            <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+          </div>
+        </div>
+        <div class="text-center mt-3" style="color:#24345c">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+menuToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+document.querySelectorAll('.sidebar ul li').forEach(li => {
+  li.addEventListener('click', () => {
+    const href = li.getAttribute('data-href');
+    if (href) location.href = href;
+  });
+});
+
+let wasOffline = !navigator.onLine;
+const alertDiv = document.getElementById('connectionAlert');
+function showAlert(text, color, autoHide){
+  alertDiv.style.background = color;
+  alertDiv.textContent = text;
+  alertDiv.style.top = '0';
+  alertDiv.style.display = 'block';
+  document.getElementById('mainHeader').style.marginTop = alertDiv.offsetHeight + 'px';
+  if(autoHide){
+    setTimeout(()=>{ alertDiv.style.top = '-80px'; setTimeout(()=>{ alertDiv.style.display='none'; document.getElementById('mainHeader').style.marginTop='0'; },350); },2500);
+  }
+}
+function handleConnectionChange(e){
+  if(!navigator.onLine){
+    showAlert('Sin conexión a Internet','#e74c3c',false);
+    wasOffline = true;
+  } else if(navigator.onLine && wasOffline){
+    showAlert('Conectado','#2ecc71',true);
+    wasOffline = false;
+  }
+}
+window.addEventListener('online', handleConnectionChange);
+window.addEventListener('offline', handleConnectionChange);
+if(!navigator.onLine) handleConnectionChange();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./serviceWorker.js')
+    .then(reg => console.log('Service Worker registrado', reg))
+    .catch(err => console.warn('Error registrando SW', err));
+};
+</script>
+</body>
+</html>

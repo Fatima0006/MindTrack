@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindTrack</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; display: flex; min-height: 100vh; background-color: #f9f9fb; flex-direction: column; }
+
+.sidebar { width: 250px; background-color: #ffffff; border-right: 3px solid #24345c; transition: width 0.3s; overflow: hidden; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; }
+.sidebar.collapsed { width: 70px; }
+.sidebar .logo { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; font-size: 20px; font-weight: 600; color: #24345c; border-bottom: 2px solid #24345c; }
+.logo-img { width: 50px; height: 50px; object-fit: contain; }
+.sidebar ul { list-style: none; margin-top: 20px; flex: 1; }
+.sidebar ul li { padding: 15px 20px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s ease; color: #24345c; font-weight: 500; }
+.sidebar ul li:hover { background-color: rgba(225, 129, 37, 0.15); border-left: 4px solid #e18125; }
+.sidebar ul li i { font-size: 20px; color: #e18125; margin-right: 15px; width: 25px; text-align: center; }
+.sidebar ul li span { white-space: nowrap; }
+.sidebar.collapsed ul li span { display: none; }
+
+.main { margin-left: 250px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s; }
+.sidebar.collapsed ~ .main { margin-left: 70px; }
+
+header { background-color: #ffffff; border-bottom: 3px solid #24345c; padding: 15px 25px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(36, 52, 92, 0.1); justify-content: space-between; }
+header .menu-toggle { font-size: 26px; color: #24345c; cursor: pointer; transition: color 0.3s; }
+header .menu-toggle:hover { color: #e18125; }
+header .user-info span { font-size: 20px; font-weight: 600; color:#24345c; }
+
+.content { padding: 30px; flex: 1; overflow-y: auto; background-color: #ffffff; }
+h2.section-title { color: #24345c; margin: 25px 0 15px; cursor:pointer; font-weight: 600; font-size:24px; display:flex; justify-content: space-between; align-items:center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 10px; }
+.card { background: white; border-radius: 15px; padding: 25px; border: 2px solid #24345c; box-shadow: 0 4px 12px rgba(36, 52, 92, 0.1); transition: all 0.3s ease; text-align: center; }
+.card:hover { transform: translateY(-8px); border-color: #e18125; box-shadow: 0 8px 20px rgba(36, 52, 92, 0.2); }
+.card h3 { color: #24345c; margin-bottom: 10px; font-size: 18px; font-weight: 600; }
+.card p { color: #444; font-size: 16px; margin:5px 0; }
+.card button { margin-top:10px; padding:6px 14px; font-size:14px; background:#e18125; color:white; border:none; border-radius:8px; cursor:pointer; }
+.card button:hover { background:#cf731c; }
+canvas { width: 100% !important; height: 200px !important; }
+
+footer { border-top:3px solid #24345c; background:#fff; color:#24345c; padding:40px 20px 20px; text-align:center; margin-top:40px; }
+footer .container { max-width:1000px; margin:auto; }
+footer .row { display:flex; flex-wrap:wrap; justify-content:space-between; gap:30px; }
+footer h5 { color:#24345c; margin-bottom:10px; }
+footer a { color:#24345c; text-decoration:none; }
+footer a:hover { color:#e18125; }
+
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(36, 52, 92, 0.6); justify-content: center; align-items: center; }
+.modal-content { background: #fff; border: 2px solid #24345c; border-radius: 12px; padding: 30px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+.modal-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 15px; }
+.modal-content h3 { color: #24345c; margin-bottom: 10px; }
+.modal-content p { color: #555; font-size: 15px; margin-bottom: 25px; }
+.modal-buttons { display: flex; justify-content: center; gap: 15px; }
+.btn-confirm, .btn-cancel { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; border:none; }
+.btn-confirm { background-color: #e18125; color:white; }
+.btn-cancel { background-color: #24345c; color:white; }
+
+
+@media (max-width: 768px) {
+  .sidebar { position: absolute; z-index: 100; left: -250px; }
+  .sidebar.collapsed { left: 0; width: 250px; }
+  .main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="MindTrack Logo" class="logo-img">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="dashboard.html"><i>🏠</i><span>Inicio</span></li>
+    <li data-href="profile.html"><i>⚙️</i><span>Perfil</span></li>
+    <li id="logoutSidebar"><i>🚪</i><span>Cerrar sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <header>
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info"><span id="user-display"></span></div>
+  </header>
+  
+  <div class="content" id="content">
+    <h2>¡Bienvenido, <span id="user-display-inner"></span>!</h2>
+
+    <h2 class="section-title" onclick="toggleSection('chartsSection')">📊 Gráficas de Actividad</h2>
+    <div class="cards" id="chartsSection">
+      <div class="card"><h3>Nivel de Estrés Diario</h3><canvas id="stressLevelChart"></canvas></div>
+      <div class="card"><h3>Distribución de Situaciones de Estrés</h3><canvas id="stressActivitiesChart"></canvas></div>
+      <div class="card"><h3>Correlación Estrés – Ritmo Cardíaco</h3><canvas id="stressCorrelationChart"></canvas></div>
+    </div>
+
+    <h2 class="section-title" onclick="toggleSection('exercisesContainer')">🧠 Ejercicios Disponibles</h2>
+    <div class="cards" id="exercisesContainer"></div>
+
+    <h2 class="section-title" onclick="toggleSection('sessionsContainer')">📆 Sesiones Recientes</h2>
+    <div class="cards" id="sessionsContainer"></div>
+  </div>
+
+ <footer class="text-dark pt-5 pb-3" style="border-top:3px solid #24345c;background:#fff">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 mb-3">
+            <h5 style="color:#24345c">MindTrack</h5>
+            <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Enlaces</h5>
+            <ul class="list-unstyled footer-links">
+              <li><a href="dashboard.html">Inicio</a></li>
+              <li><a href="profile.html">Perfil</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Contacto</h5>
+            <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+            <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+          </div>
+        </div>
+        <div class="text-center mt-3" style="color:#24345c">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+      </div>
+    </footer>
+    
+<div id="logoutModal" class="modal">
+  <div class="modal-content">
+    <img src="img/logo.jpg" class="modal-logo" alt="MindTrack Logo">
+    <h3>¿Deseas cerrar sesión?</h3>
+    <p>Tu sesión actual se cerrará y volverás al inicio.</p>
+    <div class="modal-buttons">
+      <button id="confirmLogout" class="btn-confirm">Sí, salir</button>
+      <button id="cancelLogout" class="btn-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', ()=> sidebar.classList.toggle('collapsed'));
+
+const username = localStorage.getItem("username");
+if(username){
+  document.getElementById("user-display").textContent = username;
+  document.getElementById("user-display-inner").textContent = username;
+} else { window.location.href='index.html'; }
+
+document.querySelectorAll('ul li[data-href]').forEach(item=>{
+  item.addEventListener('click', ()=> window.location.href=item.getAttribute('data-href'));
+});
+
+const modal = document.getElementById('logoutModal');
+document.getElementById('logoutSidebar').addEventListener('click', ()=> modal.style.display='flex');
+document.getElementById('confirmLogout').addEventListener('click', ()=>{
+  localStorage.removeItem('username'); 
+  window.location.href='index.html'; 
+});
+document.getElementById('cancelLogout').addEventListener('click', ()=> modal.style.display='none');
+window.addEventListener('click', e=> { if(e.target===modal) modal.style.display='none'; });
+
+function toggleSection(id){ 
+  const sec = document.getElementById(id); 
+  sec.style.display = (sec.style.display === 'none') ? 'grid' : 'none';
+}
+
+const stressLevelData={labels:['Lunes','Martes','Miércoles','Jueves','Viernes'],datasets:[{label:'Nivel de Estrés',data:[3,5,2,4,3],backgroundColor:'#e18125'}]};
+const stressActivitiesData={labels:['Escuela','Juegos','Descanso','Socialización'],datasets:[{label:'Porcentaje de Estrés',data:[40,20,15,25],backgroundColor:['#e18125','#24345c','#f39c12','#2ecc71']} ]};
+const stressCorrelationData={labels:['Lunes','Martes','Miércoles','Jueves','Viernes'],datasets:[
+  {label:'Nivel de Estrés',data:[3,5,2,4,3],borderColor:'#e18125',backgroundColor:'rgba(225,129,37,0.2)',yAxisID:'y1',tension:0.3},
+  {label:'Frecuencia Cardíaca',data:[80,85,78,90,88],borderColor:'#24345c',backgroundColor:'rgba(36,52,92,0.2)',yAxisID:'y2',tension:0.3}
+]};
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  new Chart(document.getElementById('stressLevelChart'),{type:'bar',data:stressLevelData,options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+  new Chart(document.getElementById('stressActivitiesChart'),{type:'doughnut',data:stressActivitiesData,options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('stressCorrelationChart'),{type:'line',data:stressCorrelationData,options:{responsive:true,scales:{y1:{type:'linear',position:'left'},y2:{type:'linear',position:'right',grid:{drawOnChartArea:false}}}}});
+
+  const exercises = [
+    {name:"Memoria Visual", duration:"10 min", level:"Básico", objective:"Mejorar memoria y concentración"},
+    {name:"Razonamiento Lógico", duration:"15 min", level:"Intermedio", objective:"Desarrollar habilidades de lógica"},
+    {name:"Atención Sostenida", duration:"12 min", level:"Básico", objective:"Mejorar la concentración y foco"}
+  ];
+  const exercisesContainer = document.getElementById("exercisesContainer");
+  exercises.forEach(ex=>{
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.innerHTML = `<h3>${ex.name}</h3>
+                      <p>Duración: ${ex.duration}</p>
+                      <p>Nivel: ${ex.level}</p>
+                      <p>Objetivo: ${ex.objective}</p>
+                      <button onclick="alert('Iniciando ejercicio ${ex.name}')">Iniciar</button>`;
+    exercisesContainer.appendChild(card);
+  });
+
+  const sessions = [
+    {name:"Sesión Matutina", date:"20/10/2025", duration:"25 min", exercises:"Memoria Visual, Atención Sostenida", result:"85% aciertos"},
+    {name:"Sesión Tarde", date:"19/10/2025", duration:"30 min", exercises:"Razonamiento Lógico, Memoria Visual", result:"90% aciertos"}
+  ];
+  const sessionsContainer = document.getElementById("sessionsContainer");
+  sessions.forEach(s=>{
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.innerHTML = `<h3>${s.name}</h3>
+                      <p>Fecha: ${s.date}</p>
+                      <p>Duración: ${s.duration}</p>
+                      <p>Ejercicios: ${s.exercises}</p>
+                      <p>Resultado: ${s.result}</p>
+                      <button onclick="alert('Mostrando detalles de ${s.name}')">Ver Detalles</button>`;
+    sessionsContainer.appendChild(card);
+  });
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./serviceWorker.js')
+    .then(() => console.log('Service Worker registrado correctamente.'))
+    .catch(err => console.error('Error registrando SW:', err));
+}
+
+const alertDiv = document.createElement('div');
+alertDiv.id = 'connectionAlert';
+alertDiv.style.cssText = 'display:none;position:fixed;top:-60px;left:0;width:100%;text-align:center;padding:12px 0;font-weight:600;z-index:1100;color:#fff;';
+document.body.appendChild(alertDiv);
+
+function showAlert(text, color, autoHide){
+  alertDiv.style.background = color;
+  alertDiv.textContent = text;
+  alertDiv.style.top = '0';
+  alertDiv.style.display = 'block';
+  if(autoHide){
+    setTimeout(()=>{
+      alertDiv.style.top = '-80px';
+      setTimeout(()=>{ alertDiv.style.display='none'; }, 350);
+    },2500);
+  }
+}
+
+navigator.serviceWorker.addEventListener('message', event => {
+  if(event.data.type === 'OFFLINE'){
+    showAlert('Sin conexión a Internet','#e74c3c', false);
+  }
+});
+
+window.addEventListener('online', ()=> showAlert('Conectado','#27ae60', true));
+window.addEventListener('offline', ()=> showAlert('Sin conexión a Internet','#e74c3c', false));
+</script>
+
+
+</body>
+</html>
