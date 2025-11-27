@@ -154,18 +154,24 @@ function handleSignUpClick() {
     return;
   }
 
-  const now = Date.now();
+  
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  if (alreadyRegisteredEmail === email && firstClickTime && (now - firstClickTime < 7000)) {
-    showSuccessModal();
-    return;
+  if (!isMobile) {
+  
+    const now = Date.now();
+    if (alreadyRegisteredEmail === email && firstClickTime && (now - firstClickTime < 7000)) {
+      showSuccessModal();
+      return;
+    }
+    firstClickTime = now;
+    alreadyRegisteredEmail = email;
   }
 
-  firstClickTime = now;
-
-  registerUser();
-  alreadyRegisteredEmail = email; 
+  
+  registerUser(username, email, password);
 }
+
 
 function showSuccessModal() {
   const modal = document.getElementById("successModal");
