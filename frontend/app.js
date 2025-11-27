@@ -240,9 +240,12 @@ async function registerUser() {
     });
 
     try {
+      const token = await auth.currentUser.getIdToken();
       await fetch(`${API_BASE}/admin/registerUser`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          "Authorization": "Bearer " + token 
+         },
         body: JSON.stringify({
           email,
           display_name: username,

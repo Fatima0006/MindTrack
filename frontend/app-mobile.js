@@ -62,7 +62,7 @@ export async function initDashboard() {
         </div>
     `;
 } else {
-    // Si sí hay sesiones, renderizamos normalmente
+    
     renderSessions(sessions);
 
     if (currentUserRole !== "admin") {
