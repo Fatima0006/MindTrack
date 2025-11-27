@@ -1,0 +1,228 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindTrack</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style-home.css" />
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<aside class="sidebar" id="sidebar">
+  <ul>
+    <li data-href="home.html"><i class="fa fa-home"></i><span>Inicio</span></li>
+    <li data-href="about.html"><i class="fa fa-book"></i><span>Sobre MindTrack</span></li>
+    <li data-href="index.html"><i class="fa fa-key"></i><span>Iniciar Sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <header id="mainHeader">
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info">
+       <div class="logo">
+    <img src="img/logo.jpg" class="logo-img" alt="logo">
+  </div>
+      <span class="brand-small">MindTrack</span>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+
+    <div id="carouselMind" class="carousel slide mt-3" data-ride="carousel">
+
+      <div class="carousel-inner">
+
+        <div class="carousel-item active">
+          <img class="d-block" src="img/carrusel-1.jpg" alt="Bienvenida">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase carr-text">Descubre</h4>
+            <h1 class="display-3 carr-title">MindTrack, tu aliado en bienestar</h1>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <img class="d-block" src="img/carrusel-2.jpg" alt="Seguimiento">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase carr-text">Siente</h4>
+            <h1 class="display-3 carr-title">Controla tus emociones</h1>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <img class="d-block" src="img/carrusel-3.jpg" alt="Recursos">
+          <div class="carousel-caption d-flex flex-column justify-content-center">
+            <h4 class="text-uppercase carr-text">Explora</h4>
+            <h1 class="display-3 carr-title">Recursos y ejercicios cognitivos</h1>
+          </div>
+        </div>
+
+      </div>
+
+      <a class="carousel-control-prev" href="#carouselMind" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </a>
+      <a class="carousel-control-next" href="#carouselMind" role="button" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </a>
+
+    </div>
+
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h6 class="text-uppercase" style="letter-spacing:5px;color:#24345c">Funciones</h6>
+        <h1 style="color:#24345c">Qué puedes hacer con MindTrack</h1>
+      </div>
+
+      <div class="row">
+
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-heartbeat mb-4" style="color:#e18125"></i>
+            <h5>Seguimiento emocional</h5>
+        <p>Registra cómo te sientes cada día para ayudarte a reconocer tus emociones y acompañar tus resultados en las pruebas de reacción y ritmo cardiaco.</p>
+        </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-book-open mb-4" style="color:#e18125"></i>
+            <h5>Pruebas cognitivas</h5>
+            <p>Realiza ejercicios divertidos que miden tu tiempo de reacción, atención y memoria, ayudando a comprender cómo funciona tu mente.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="service-item text-center p-5 shadow-lg rounded-4">
+            <i class="fa fa-2x fa-user-shield mb-4" style="color:#e18125"></i>
+            <h5>Monitoreo de BPM</h5>
+            <p>Tu ritmo cardiaco (BPM) se registra de forma segura para apoyar la evaluación de tu bienestar y desempeño durante las pruebas.</p>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="text-dark pt-5 pb-3" style="border-top:3px solid #24345c;background:#fff">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 mb-3">
+            <h5 style="color:#24345c">MindTrack</h5>
+            <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Enlaces</h5>
+            <ul class="list-unstyled footer-links">
+              <li><strong><a href="home.html">Inicio</a></strong></li>
+              <li><a href="about.html">Sobre MindTrack</a></li>
+              <li><a href="index.html">Iniciar Sesión</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3 mb-3">
+            <h5 style="color:#24345c">Contacto</h5>
+            <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+            <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+          </div>
+        </div>
+        <div class="text-center mt-3" style="color:#24345c">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="Navegación móvil">
+  <ul>
+    <li data-href="home.html" title="Inicio"><i class="fa fa-home"></i></li>
+    <li data-href="about.html" title="Sobre"><i class="fa fa-book"></i></li>
+    <li data-href="index.html" title="Login"><i class="fa fa-key"></i></li>
+  </ul>
+</nav>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+
+menuToggle.addEventListener('click', () => {
+  if (window.innerWidth >= 768) {
+    sidebar.classList.toggle('collapsed');
+  }
+});
+
+document.querySelectorAll('.sidebar ul li').forEach(li => {
+  li.addEventListener('click', () => {
+    const href = li.getAttribute('data-href');
+    if (href) location.href = href;
+  });
+});
+
+document.querySelectorAll('.mobile-bottom-nav ul li').forEach(li => {
+  li.addEventListener('click', () => {
+    const href = li.getAttribute('data-href');
+    if (href) location.href = href;
+  });
+});
+  document.querySelectorAll('.mobile-bottom-nav ul li').forEach(li => {
+    li.addEventListener('click', () => {
+      const href = li.getAttribute('data-href');
+      if (href) location.href = href;
+    });
+  });
+
+let wasOffline = !navigator.onLine;
+const alertDiv = document.getElementById('connectionAlert');
+
+function showAlert(text, color, autoHide){
+  alertDiv.style.background = color;
+  alertDiv.textContent = text;
+  alertDiv.style.top = '0';
+  alertDiv.style.display = 'block';
+  document.getElementById('mainHeader').style.marginTop = alertDiv.offsetHeight + 'px';
+
+  if(autoHide){
+    setTimeout(()=>{
+      alertDiv.style.top = '-80px';
+      setTimeout(()=>{
+        alertDiv.style.display='none';
+        document.getElementById('mainHeader').style.marginTop='0';
+      },350);
+    },2500);
+  }
+}
+
+function handleConnectionChange(e){
+  if(!navigator.onLine){
+    showAlert('Sin conexión a Internet','#e74c3c',false);
+    wasOffline = true;
+  } else if(navigator.onLine && wasOffline){
+    showAlert('Conectado','#2ecc71',true);
+    wasOffline = false;
+  }
+}
+
+window.addEventListener('online', handleConnectionChange);
+window.addEventListener('offline', handleConnectionChange);
+
+if(!navigator.onLine) handleConnectionChange();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./serviceWorker.js')
+  .then(()=>console.log('Service Worker registrado'))
+  .catch(()=>console.warn('Error registrando SW'));
+}
+</script>
+
+</body>
+</html>

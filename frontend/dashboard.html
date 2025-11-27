@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindTrack Dashboard</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script type="module" src="./app-mobile.js"></script>
+
+<link rel="stylesheet" href="css/style-dashboard.css" />
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="MindTrack Logo" class="logo-img">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="dashboard.html"><i class="fa fa-home"></i><span>Inicio</span></li>
+ <!--   <li data-href="profile.html"><i class="fa fa-user"></i><span>Perfil</span></li>-->
+    <li id="logoutSidebar"><i class="fa fa-sign-out-alt"></i><span>Cerrar sesión</span></li>
+  </ul>
+</aside>
+
+<div class="main">
+  <header>
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info"><span id="user-display"></span></div>
+  </header>
+  
+  
+
+    <div class="content" id="content">
+      <h3>¡Bienvenido, <span id="user-display-inner"></span>!</h3>
+
+<h2 id="activity-title" class="section-title">Gráficas de actividad</h2>
+
+<div id="activity-charts" class="cards" style="margin-bottom: 30px;">
+</div>
+
+
+      <h2 class="section-title" onclick="toggleSection('sessionsContainer')">Sesiones Recientes</h2>
+      <div class="cards" id="sessionsContainer"></div>
+    </div>
+
+    <footer class="text-dark pt-5 pb-3" style="border-top:3px solid #24345c;background:#fff">
+  <div class="container">
+      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <div class="row">
+      <div class="col-lg-6 mb-3">
+        <h5 style="color:#24345c">MindTrack</h5>
+        <p>Tu aliado en bienestar emocional y desarrollo cognitivo.</p>
+      </div>
+      <!--<div class="col-lg-3 mb-3">
+        <h5 style="color:#24345c">Enlaces</h5>
+        <ul class="list-unstyled footer-links">
+          <li><strong><a href="dashboard.html">Inicio</a></strong></li>
+          <li><a href="profile.html">Perfil</a></li>
+        </ul>
+      </div>-->
+      <div class="col-lg-3 mb-3">
+        <h5 style="color:#24345c">Contacto</h5>
+        <p><i class="fa fa-phone-alt mr-2"></i>+52 8123456789</p>
+        <p><i class="fa fa-envelope mr-2"></i>contact@mindtrack.com</p>
+      </div>
+    </div>
+    <div class="text-center mt-3" style="color:#24345c">&copy; 2025 MindTrack. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="Navegación móvil">
+  <ul>
+    <li data-href="dashboard.html" title="Inicio"><i class="fa fa-home"></i></li>
+   <!-- <li data-href="profile.html" title="Perfil"><i class="fa fa-user"></i></li>-->
+    <li id="logoutMobile" title="Cerrar sesión"><i class="fa fa-sign-out-alt"></i></li>
+  </ul>
+</nav>
+
+<div id="logoutModal" class="modal">
+  <div class="modal-content">
+    <img src="img/logo.jpg" class="modal-logo" alt="MindTrack Logo">
+    <h3>¿Deseas cerrar sesión?</h3>
+    <p>Tu sesión actual se cerrará y volverás al inicio.</p>
+    <div class="modal-buttons">
+      <button id="confirmLogout" class="btn-confirm">Sí, salir</button>
+      <button id="cancelLogout" class="btn-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initDashboard } from './app-mobile.js';
+
+document.addEventListener('DOMContentLoaded', initDashboard);
+
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', ()=> sidebar.classList.toggle('collapsed'));
+
+const modal = document.getElementById('logoutModal');
+document.getElementById('logoutSidebar').addEventListener('click', ()=> modal.style.display='flex');
+document.getElementById('logoutMobile').addEventListener('click', ()=> modal.style.display='flex');
+document.getElementById('cancelLogout').addEventListener('click', ()=> modal.style.display='none');
+document.getElementById('confirmLogout').addEventListener('click', async ()=> {
+    auth.signOut().then(()=> {
+        modal.style.display='none';
+        window.location.href='index.html';
+    });
+});
+
+document.querySelectorAll('ul li[data-href]').forEach(item=>{
+    item.addEventListener('click', ()=> window.location.href=item.getAttribute('data-href'));
+});
+
+window.toggleSection = function(id){
+    const sec = document.getElementById(id);
+    sec.style.display = (sec.style.display==='none') ? 'grid':'none';
+}
+</script>
+
+</body>
+</html>

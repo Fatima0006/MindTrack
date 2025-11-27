@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json">
+  <title>MindTrack</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: 'Poppins', sans-serif; display: flex; min-height: 100vh; background-color: #f9f9fb; }
+
+    .sidebar { width: 250px; background-color: #ffffff; border-right: 3px solid #24345c; transition: width 0.3s; overflow: hidden; box-shadow: 2px 0 10px rgba(36, 52, 92, 0.1); }
+    .sidebar.collapsed { width: 70px; }
+    .sidebar .logo { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; font-size: 20px; font-weight: 600; color: #24345c; border-bottom: 2px solid #24345c; }
+    .logo-img { width: 50px; height: 50px; object-fit: contain; }
+    .sidebar ul { list-style: none; margin-top: 20px; }
+    .sidebar ul li { padding: 15px 20px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s ease; color: #24345c; font-weight: 500; }
+    .sidebar ul li:hover { background-color: rgba(225, 129, 37, 0.15); border-left: 4px solid #e18125; }
+    .sidebar ul li i { font-size: 20px; color: #e18125; margin-right: 15px; width: 25px; text-align: center; }
+    .sidebar ul li span { white-space: nowrap; }
+    .sidebar.collapsed ul li span { display: none; }
+
+    .main { flex: 1; display: flex; flex-direction: column; }
+
+    header { background-color: #ffffff; border-bottom: 3px solid #24345c; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(36, 52, 92, 0.1); }
+    header .menu-toggle { font-size: 26px; color: #24345c; cursor: pointer; transition: color 0.3s; }
+    header .menu-toggle:hover { color: #e18125; }
+    header .user-info { display: flex; align-items: center; gap: 12px; }
+    header .user-info span { color: #24345c; font-weight: 600; }
+
+    #connectionAlert { display:none; position:fixed; top:0; left:0; width:100%; text-align:center; padding:10px 0; font-weight:500; z-index:1050; transition: top 0.3s ease; color:white; }
+
+    .content { padding: 30px; flex: 1; overflow-y: auto; background-color: #ffffff; margin-top: 50px; }
+    h2 { text-align:center; color:#24345c; margin-bottom:20px; }
+
+    table { width:90%; margin:20px auto; border-collapse:collapse; }
+    th, td { border:1px solid #24345c; padding:10px; text-align:center; }
+    th { background:#24345c; color:white; }
+    button.action-btn { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; }
+    .btn-edit { background:#e18125; color:white; }
+    .btn-edit:hover { background:#cf731c; }
+    .btn-delete { background:#24345c; color:white; }
+    .btn-delete:hover { background:#1e2d4f; }
+
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(36,52,92,0.6); justify-content:center; align-items:center; z-index:200; }
+    .modal-content { background:white; padding:30px; border-radius:12px; max-width:400px; width:90%; border:2px solid #24345c; text-align:center; }
+    .modal-buttons { display:flex; justify-content:center; gap:15px; margin-top:15px; }
+    .btn-confirm { background:#e18125; color:white; padding:10px 20px; border-radius:8px; cursor:pointer; }
+    .btn-cancel { background:#24345c; color:white; padding:10px 20px; border-radius:8px; cursor:pointer; }
+
+    @media (max-width: 768px) { 
+      .sidebar { position: absolute; z-index: 100; left: -250px; } 
+      .sidebar.collapsed { left: 0; width: 250px; } 
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="connectionAlert"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <img src="img/logo.jpg" alt="MindTrack Logo" class="logo-img">
+    <span>MindTrack</span>
+  </div>
+  <ul>
+    <li data-href="admin-dashboard.html"><i>🏠</i><span>Inicio</span></li>
+    <li data-href="users.html"><i>👥</i><span>Usuarios</span></li>
+    <li id="logoutSidebar"><i>🚪</i><span>Cerrar sesión</span></li>
+  </ul>
+</aside>
+<div class="main">
+  <header>
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="user-info">
+      <span id="user-name">Admin</span>
+    </div>
+  </header>
+
+  <div class="content">
+    <h2>Usuarios registrados</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="users-table"></tbody>
+    </table>
+
+  </div>
+</div>
+
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modal-title">Alerta</h3>
+    <p id="modal-message"></p>
+    <div class="modal-buttons">
+      <button id="modal-ok" class="btn-confirm">Aceptar</button>
+      <button id="modal-cancel" class="btn-cancel" style="display:none;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>

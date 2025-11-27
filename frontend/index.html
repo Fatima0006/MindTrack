@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style-index.css" />
+  <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <title>MindTrack</title>
+</head>
+<body>
+
+<div id="connectionAlert"></div>
+
+<div class="container">
+  <div class="forms-container">
+    <div class="signin-signup">
+      <form id="sign-in-form" class="sign-in-form">
+        <h2 class="title">Inicio de Sesión</h2>
+
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Correo Electrónico" id="signin-email" list="email-history"/>
+          <datalist id="email-history"></datalist>
+        </div>
+
+        <div class="input-field" style="position:relative;">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Contraseña" id="signin-password" />
+          <i id="toggleSigninPassword" class="fas fa-eye-slash" 
+             style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
+                    cursor:pointer; color:#555;"></i>
+        </div>
+
+        <input type="submit" value="Iniciar Sesión" class="btn solid"/>
+      </form>
+      <form id="sign-up-form" class="sign-up-form">
+        <h2 class="title">Registrarse</h2>
+        
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Nombre de Usuario" id="signup-username" />
+        </div>
+
+        <div class="input-field">
+          <i class="fas fa-envelope"></i>
+          <input type="email" placeholder="Correo Electrónico" id="signup-email" />
+        </div>
+
+        <div class="input-field" style="position:relative;">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Contraseña" id="signup-password" />
+          <i id="toggleSignupPassword" class="fas fa-eye-slash" 
+             style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
+                    cursor:pointer; color:#555;"></i>
+        </div>
+        <div id="password-requirements" style="font-size:12px; color:gray; margin-top:5px;">
+          <p id="req-length">( ) Mínimo 6 caracteres</p>
+          <p id="req-uppercase">( ) Al menos una mayúscula</p>
+          <p id="req-lowercase">( ) Al menos una minúscula</p>
+          <p id="req-number">( ) Al menos un número</p>
+          <p id="req-special">( ) Al menos un carácter especial (.!@#$%^&*)</p>
+        </div>
+
+        <input type="submit" class="btn" value="Registrarse"/>
+        <p id="doubleClickHint" style="font-size:12px; color:gray; text-align:center; margin-top:5px; display:none;">
+          (Pica el botón dos veces seguidas para ver la alerta de registro)
+        </p>
+        
+      </form>
+    </div>
+  </div>
+
+  <div style="position:fixed; top:15px; right:20px; z-index:1051;">
+    <a href="home.html" 
+      style="background-color:#24345c; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:500; transition:0.3s;"
+      onmouseover="this.style.backgroundColor='#e18125'" 
+      onmouseout="this.style.backgroundColor='#24345c'">Inicio</a>
+  </div>
+
+  <div class="panels-container">
+    <div class="panel left-panel">
+      <div class="content">
+        <h3>¿Eres nuevo aquí?</h3>
+        <p>Regístrate para empezar a usar la app.</p>
+        <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+      </div>
+    </div>
+
+    <div class="panel right-panel">
+      <div class="content">
+        <h3>¿Ya tienes cuenta?</h3>
+        <p>Inicia sesión para continuar.</p>
+        <button class="btn transparent" id="sign-in-btn">Iniciar Sesión</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+<script>
+  const signUpBtn = document.getElementById('sign-up-btn');
+  const signInBtn = document.getElementById('sign-in-btn');
+  const container = document.querySelector('.container');
+
+  signUpBtn.addEventListener('click', () => container.classList.add('sign-up-mode'));
+  signInBtn.addEventListener('click', () => container.classList.remove('sign-up-mode'));
+
+  const toggleSignupPassword = document.getElementById("toggleSignupPassword");
+  const signupPasswordInput = document.getElementById("signup-password");
+  toggleSignupPassword.addEventListener("click", () => {
+    const type = signupPasswordInput.getAttribute("type") === "password" ? "text" : "password";
+    signupPasswordInput.setAttribute("type", type);
+    toggleSignupPassword.classList.toggle("fa-eye");
+    toggleSignupPassword.classList.toggle("fa-eye-slash");
+  });
+
+  const toggleSigninPassword = document.getElementById("toggleSigninPassword");
+  const signinPasswordInput = document.getElementById("signin-password");
+  toggleSigninPassword.addEventListener("click", () => {
+    const type = signinPasswordInput.getAttribute("type") === "password" ? "text" : "password";
+    signinPasswordInput.setAttribute("type", type);
+    toggleSigninPassword.classList.toggle("fa-eye");
+    toggleSigninPassword.classList.toggle("fa-eye-slash");
+  });
+</script>
+
+<div id="successModal" class="modal" style="display:none;">
+  <div class="modal-content" style="text-align:center; padding:20px; border-radius:10px; background:white; max-width:350px; margin:100px auto; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+    <img src="img/logo.jpg" class="modal-logo" alt="MindTrack Logo" style="width:80px; margin-bottom:15px;">
+    <h3>Registro exitoso</h3>
+    <p>Tu cuenta ha sido creada correctamente.</p>
+    <div class="modal-buttons" style="display:flex; justify-content:center; margin-top:20px;">
+      <button id="acceptModal" class="btn-confirm" style="padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500; border:none; background-color:#e18125; color:white;">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div id="errorModal" class="modal" style="display:none;">
+  <div class="modal-content" style="text-align:center; padding:20px; border-radius:10px; background:white; max-width:350px; margin:100px auto; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+    <img src="img/logo.jpg" class="modal-logo">
+    <h3>Error</h3>
+    <p></p>
+    <div class="modal-buttons" style="display:flex; justify-content:center; margin-top:20px;">
+      <button id="acceptErrorModal" class="btn-confirm" style="padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500; border:none; background-color:#24345c; color:white;">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
