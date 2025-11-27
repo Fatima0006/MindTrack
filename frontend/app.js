@@ -151,9 +151,7 @@ function handleSignUpClick() {
     return;
   }
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  if (!isMobile) {
+  
     const now = Date.now();
     if (alreadyRegisteredEmail === email && firstClickTime && (now - firstClickTime < 7000)) {
       showSuccessModal();
@@ -161,7 +159,6 @@ function handleSignUpClick() {
     }
     firstClickTime = now;
     alreadyRegisteredEmail = email;
-  }
 
   registerUser(username, email, password);
 }
