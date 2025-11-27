@@ -53,96 +53,90 @@ function initFormListeners() {
   }
 
   const signupUsername = document.getElementById("signup-username");
-const signupEmail = document.getElementById("signup-email");
-const signupPassword = document.querySelector("#sign-up-form input[type=password]");
-const doubleClickHint = document.getElementById("doubleClickHint");
+  const signupEmail = document.getElementById("signup-email");
+  const signupPasswordInput = document.getElementById("signup-password");
+  const doubleClickHint = document.getElementById("doubleClickHint");
 
-function checkFieldsForHint() {
-  if (signupUsername.value.trim() && signupEmail.value.trim() && signupPassword.value.trim()) {
-    doubleClickHint.style.display = "block";
-  } else {
-    doubleClickHint.style.display = "none";
-  }
-}
-
-[signupUsername, signupEmail, signupPassword].forEach(input => {
-  input.addEventListener("input", checkFieldsForHint);
-});
-
-
-
-const signupPasswordInput = document.querySelector("#sign-up-form input[type=password]");
-const submitBtn = document.querySelector("#sign-up-form input[type=submit]");
-
-const reqLength = document.getElementById("req-length");
-const reqUpper = document.getElementById("req-uppercase");
-const reqLower = document.getElementById("req-lowercase");
-const reqNumber = document.getElementById("req-number");
-const reqSpecial = document.getElementById("req-special");
-
-function validatePassword(password) {
-  let valid = true;
-
-  if (password.length >= 6) {
-    reqLength.style.color = "green";
-    reqLength.textContent = "✔ Mínimo 6 caracteres";
-  } else {
-    reqLength.style.color = "gray";
-    reqLength.textContent = "( ) Mínimo 6 caracteres";
-    valid = false;
+  function checkFieldsForHint() {
+    if (signupUsername.value.trim() && signupEmail.value.trim() && signupPasswordInput.value.trim()) {
+      doubleClickHint.style.display = "block";
+    } else {
+      doubleClickHint.style.display = "none";
+    }
   }
 
-  if (/[A-Z]/.test(password)) {
-    reqUpper.style.color = "green";
-    reqUpper.textContent = "✔ Al menos una mayúscula";
-  } else {
-    reqUpper.style.color = "gray";
-    reqUpper.textContent = "( ) Al menos una mayúscula";
-    valid = false;
+  [signupUsername, signupEmail, signupPasswordInput].forEach(input => {
+    input.addEventListener("input", checkFieldsForHint);
+  });
+
+  const submitBtn = document.querySelector("#sign-up-form input[type=submit]");
+
+  const reqLength = document.getElementById("req-length");
+  const reqUpper = document.getElementById("req-uppercase");
+  const reqLower = document.getElementById("req-lowercase");
+  const reqNumber = document.getElementById("req-number");
+  const reqSpecial = document.getElementById("req-special");
+
+  function validatePassword(password) {
+    let valid = true;
+
+    if (password.length >= 6) {
+      reqLength.style.color = "green";
+      reqLength.textContent = "✔ Mínimo 6 caracteres";
+    } else {
+      reqLength.style.color = "gray";
+      reqLength.textContent = "( ) Mínimo 6 caracteres";
+      valid = false;
+    }
+
+    if (/[A-Z]/.test(password)) {
+      reqUpper.style.color = "green";
+      reqUpper.textContent = "✔ Al menos una mayúscula";
+    } else {
+      reqUpper.style.color = "gray";
+      reqUpper.textContent = "( ) Al menos una mayúscula";
+      valid = false;
+    }
+
+    if (/[a-z]/.test(password)) {
+      reqLower.style.color = "green";
+      reqLower.textContent = "✔ Al menos una minúscula";
+    } else {
+      reqLower.style.color = "gray";
+      reqLower.textContent = "( ) Al menos una minúscula";
+      valid = false;
+    }
+
+    if (/\d/.test(password)) {
+      reqNumber.style.color = "green";
+      reqNumber.textContent = "✔ Al menos un número";
+    } else {
+      reqNumber.style.color = "gray";
+      reqNumber.textContent = "( ) Al menos un número";
+      valid = false;
+    }
+
+    if (/[.!@#$%^&*]/.test(password)) {
+      reqSpecial.style.color = "green";
+      reqSpecial.textContent = "✔ Al menos un carácter especial (.!@#$%^&*)";
+    } else {
+      reqSpecial.style.color = "gray";
+      reqSpecial.textContent = "( ) Al menos un carácter especial (.!@#$%^&*)";
+      valid = false;
+    }
+
+    submitBtn.disabled = !valid; 
   }
 
-  if (/[a-z]/.test(password)) {
-    reqLower.style.color = "green";
-    reqLower.textContent = "✔ Al menos una minúscula";
-  } else {
-    reqLower.style.color = "gray";
-    reqLower.textContent = "( ) Al menos una minúscula";
-    valid = false;
-  }
-
-  if (/\d/.test(password)) {
-    reqNumber.style.color = "green";
-    reqNumber.textContent = "✔ Al menos un número";
-  } else {
-    reqNumber.style.color = "gray";
-    reqNumber.textContent = "( ) Al menos un número";
-    valid = false;
-  }
-
-  if (/[.!@#$%^&*]/.test(password)) {
-    reqSpecial.style.color = "green";
-    reqSpecial.textContent = "✔ Al menos un carácter especial (.!@#$%^&*)";
-  } else {
-    reqSpecial.style.color = "gray";
-    reqSpecial.textContent = "( ) Al menos un carácter especial (.!@#$%^&*)";
-    valid = false;
-  }
-
-  submitBtn.disabled = !valid; 
-}
-
-signupPasswordInput.addEventListener("input", (e) => {
-  validatePassword(e.target.value);
-});
-
-
-
+  signupPasswordInput.addEventListener("input", (e) => {
+    validatePassword(e.target.value);
+  });
 }
 
 initFormListeners();
 
 let firstClickTime = null;
-let alreadyRegisteredEmail = null; 
+let alreadyRegisteredEmail = null;
 
 function handleSignUpClick() {
   const username = document.getElementById("signup-username").value.trim();
@@ -154,11 +148,9 @@ function handleSignUpClick() {
     return;
   }
 
-  
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   if (!isMobile) {
-  
     const now = Date.now();
     if (alreadyRegisteredEmail === email && firstClickTime && (now - firstClickTime < 7000)) {
       showSuccessModal();
@@ -168,10 +160,8 @@ function handleSignUpClick() {
     alreadyRegisteredEmail = email;
   }
 
-  
   registerUser(username, email, password);
 }
-
 
 function showSuccessModal() {
   const modal = document.getElementById("successModal");
@@ -179,14 +169,13 @@ function showSuccessModal() {
 
   document.getElementById("acceptModal").onclick = () => {
     modal.style.display = "none";
-    window.location.href = "index.html"; 
+    window.location.href = "index.html";
   };
 }
 
-
-async function loginUser() { 
-  const email = document.getElementById("signin-email").value;
-  const password = document.getElementById("signin-password").value;
+async function loginUser() {
+  const email = document.getElementById("signin-email").value.trim();
+  const password = document.getElementById("signin-password").value.trim();
 
   if (!email || !password) {
     showAlert("Por favor llena todos los campos.", "error");
@@ -225,19 +214,12 @@ async function loginUser() {
   }
 }
 
-
-async function registerUser() {
-  const username = document.getElementById("signup-username").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.querySelector("#sign-up-form input[type=password]").value;
-
-  if (!username || !email || !password) {
-    showAlert("Por favor llena todos los campos.", "error");
-    return;
-  }
-
+async function registerUser(username, email, password) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = cred.user;
+
+    await user.reload(); 
 
     await setDoc(doc(db, "users", email), {
       username,
@@ -246,12 +228,13 @@ async function registerUser() {
     });
 
     try {
-      const token = await auth.currentUser.getIdToken();
+      const token = await user.getIdToken();
       await fetch(`${API_BASE}/admin/registerUser`, {
         method: "POST",
-        headers: { "Content-Type": "application/json",
+        headers: { 
+          "Content-Type": "application/json",
           "Authorization": "Bearer " + token 
-         },
+        },
         body: JSON.stringify({
           email,
           display_name: username,
@@ -262,8 +245,7 @@ async function registerUser() {
       console.warn("API no respondió, pero usuario creado en Firebase.");
     }
 
-    window.location.href = "index.html";
-    return;
+    showSuccessModal();
 
   } catch (err) {
     console.error("Error registrando:", err);
@@ -301,115 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUsers(token);
   });
 });
-
-async function loadUsers(token) {
-  const table = document.getElementById("usersTableBody");
-
-  if (!table) {
-    console.error("Error: No se encontró 'usersTableBody'.");
-    return; 
-  }
-
-  table.innerHTML = `<tr><td colspan="4">Cargando...</td></tr>`;
-
-  try {
-    const res = await fetch(`${API_BASE}/admin/users`, {
-      headers: { "Authorization": "Bearer " + token }
-    });
-
-    const users = await res.json();
-
-    table.innerHTML = "";
-
-    if (users.length === 0) {
-      table.innerHTML = `<tr><td colspan="4">Sin usuarios registrados</td></tr>`;
-      return;
-    }
-
-    users.forEach((u) => {
-      const tr = document.createElement("tr");
-
-      tr.innerHTML = `
-        <td>${u.display_name || "(Sin nombre)"}</td>
-        <td>${u.email}</td>
-
-        <td>
-          <select class="role-select" data-uid="${u.uid}">
-            <option value="user" ${u.role === "user" ? "selected" : ""}>User</option>
-            <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
-          </select>
-        </td>
-
-        <td>
-          <button class="edit-btn" data-uid="${u.uid}">Editar</button>
-          <button class="delete-btn" data-uid="${u.uid}">Eliminar</button>
-        </td>
-      `;
-
-      table.appendChild(tr);
-    });
-
-    attachEvents(token);
-
-  } catch (err) {
-    console.error("Error cargando usuarios:", err);
-    table.innerHTML = `<tr><td colspan="4">Error cargando usuarios</td></tr>`;
-  }
-}
-
-function attachEvents(token) {
-  document.querySelectorAll(".role-select").forEach(sel => {
-    sel.addEventListener("change", async (e) => {
-      const uid = e.target.dataset.uid;
-      const role = e.target.value;
-
-      await fetch(`${API_BASE}/admin/users/${uid}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": "Bearer " + token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ role })
-      });
-
-      alert("Rol actualizado");
-    });
-  });
-
-  document.querySelectorAll(".edit-btn").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const uid = btn.dataset.uid;
-      const name = prompt("Nuevo nombre:");
-      if (!name) return;
-
-      await fetch(`${API_BASE}/admin/users/${uid}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": "Bearer " + token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ display_name: name })
-      });
-
-      loadUsers(token);
-    });
-  });
-
-  document.querySelectorAll(".delete-btn").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const uid = btn.dataset.uid;
-      if (!confirm("¿Eliminar usuario?")) return;
-
-      await fetch(`${API_BASE}/admin/users/${uid}`, {
-        method: "DELETE",
-        headers: { "Authorization": "Bearer " + token }
-      });
-
-      loadUsers(token);
-    });
-  });
-}
-
 
 function showAlert(message, type = "success") {
   if (type === "success") {
