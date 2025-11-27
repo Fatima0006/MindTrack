@@ -32,10 +32,10 @@ app.get("/api/sessions", async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(express.static(path.join(__dirname, "frontend")));
 
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+  res.sendFile(path.join(__dirname, "frontend/index.html"));
 });
 
 
