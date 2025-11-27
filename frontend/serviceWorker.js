@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mindtrack-cache-v4.7';
+const CACHE_NAME = 'mindtrack-cache-v4.8';
 const urlsToCache = [
   './',
   './index.html',

@@ -147,7 +147,7 @@ let alreadyRegisteredEmail = null;
 function handleSignUpClick() {
   const username = document.getElementById("signup-username").value.trim();
   const email = document.getElementById("signup-email").value.trim();
-  const password = document.querySelector("#sign-up-form input[type=password]").value.trim();
+  const password = document.getElementById("signup-password").value.trim();
 
   if (!username || !email || !password) {
     showAlert("Por favor llena todos los campos.", "error");
