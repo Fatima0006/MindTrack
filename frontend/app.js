@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
-  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
   getFirestore, doc, setDoc, serverTimestamp 
@@ -25,6 +25,7 @@ window.db = db;
 
 const API_BASE = "https://secure-api-ihgz.onrender.com";
 
+// Redirige si no hay sesión activa
 if (!localStorage.getItem("username") && !window.location.href.includes("index.html")) {
   window.location.href = "index.html";
 }
@@ -135,9 +136,11 @@ function initFormListeners() {
 
 initFormListeners();
 
+// Variables para doble clic en registro
 let firstClickTime = null;
 let alreadyRegisteredEmail = null;
 
+// ----- Manejo de registro -----
 function handleSignUpClick() {
   const username = document.getElementById("signup-username").value.trim();
   const email = document.getElementById("signup-email").value.trim();
@@ -163,6 +166,50 @@ function handleSignUpClick() {
   registerUser(username, email, password);
 }
 
+async function registerUser(username, email, password) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = cred.user;
+
+    await setDoc(doc(db, "users", email), {
+      username,
+      email,
+      createdAt: serverTimestamp()
+    });
+
+    try {
+      const token = await user.getIdToken();
+      await fetch(`${API_BASE}/admin/registerUser`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token 
+        },
+        body: JSON.stringify({
+          email,
+          display_name: username,
+          role: "user"
+        })
+      });
+    } catch (apiErr) {
+      console.warn("API no respondió, pero usuario creado en Firebase.");
+    }
+
+    showSuccessModal();
+
+  } catch (err) {
+    console.error("Error registrando:", err);
+
+    if (err.code === "auth/email-already-in-use") {
+      showAlert("Este correo ya está registrado.", "error");
+      return;
+    }
+
+    showAlert("Error al registrar. Intenta nuevamente.", "error");
+  }
+}
+
+// ----- Modal de éxito -----
 function showSuccessModal() {
   const modal = document.getElementById("successModal");
   modal.style.display = "flex";
@@ -173,6 +220,7 @@ function showSuccessModal() {
   };
 }
 
+// ----- Inicio de sesión -----
 async function loginUser() {
   const email = document.getElementById("signin-email").value.trim();
   const password = document.getElementById("signin-password").value.trim();
@@ -214,51 +262,17 @@ async function loginUser() {
   }
 }
 
-async function registerUser(username, email, password) {
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    const user = cred.user;
-
-    await user.reload(); 
-
-    await setDoc(doc(db, "users", email), {
-      username,
-      email,
-      createdAt: serverTimestamp()
-    });
-
-    try {
-      const token = await user.getIdToken();
-      await fetch(`${API_BASE}/admin/registerUser`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token 
-        },
-        body: JSON.stringify({
-          email,
-          display_name: username,
-          role: "user"
-        })
-      });
-    } catch (apiErr) {
-      console.warn("API no respondió, pero usuario creado en Firebase.");
-    }
-
-    showSuccessModal();
-
-  } catch (err) {
-    console.error("Error registrando:", err);
-
-    if (err.code === "auth/email-already-in-use") {
-      showAlert("Este correo ya está registrado.", "error");
-      return;
-    }
-
-    showAlert("Error al registrar. Intenta nuevamente.", "error");
-  }
+// ----- Cerrar sesión -----
+function logoutUser() {
+  signOut(auth).then(() => {
+    localStorage.removeItem("username");
+    window.location.href = "index.html";
+  }).catch(err => {
+    console.error("Error cerrando sesión:", err);
+  });
 }
 
+// ----- Autenticación y carga de usuarios -----
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.href.includes("users.html")) return;
 
@@ -284,6 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// ----- Alertas -----
 function showAlert(message, type = "success") {
   if (type === "success") {
     document.querySelector("#successModal p").textContent = message;
