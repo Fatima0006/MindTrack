@@ -136,11 +136,9 @@ function initFormListeners() {
 
 initFormListeners();
 
-// Variables para doble clic en registro
 let firstClickTime = null;
 let alreadyRegisteredEmail = null;
 
-// ----- Manejo de registro -----
 function handleSignUpClick() {
   const username = document.getElementById("signup-username").value.trim();
   const email = document.getElementById("signup-email").value.trim();
@@ -206,7 +204,6 @@ async function registerUser(username, email, password) {
   }
 }
 
-// ----- Modal de éxito -----
 function showSuccessModal() {
   const modal = document.getElementById("successModal");
   modal.style.display = "flex";
@@ -217,7 +214,7 @@ function showSuccessModal() {
   };
 }
 
-// ----- Inicio de sesión -----
+
 async function loginUser() {
   const email = document.getElementById("signin-email").value.trim();
   const password = document.getElementById("signin-password").value.trim();
@@ -259,7 +256,6 @@ async function loginUser() {
   }
 }
 
-// ----- Cerrar sesión -----
 function logoutUser() {
   signOut(auth).then(() => {
     localStorage.removeItem("username");
@@ -269,7 +265,6 @@ function logoutUser() {
   });
 }
 
-// ----- Autenticación y carga de usuarios -----
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.href.includes("users.html")) return;
 
@@ -295,7 +290,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ----- Alertas -----
 function showAlert(message, type = "success") {
   if (type === "success") {
     document.querySelector("#successModal p").textContent = message;
