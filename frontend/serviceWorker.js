@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mindtrack-cache-v5.4';
+const CACHE_NAME = 'mindtrack-cache-v5.5';
 
 const urlsToCache = [
   './',
@@ -20,7 +20,14 @@ const urlsToCache = [
   './img/vision.png',
   './img/mision.png',
   './img/about-1.png',
-  './img/about-2.png'
+  './img/about-2.png',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css',
+  'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
+  'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+  'https://code.jquery.com/jquery-3.4.1.min.js',
+  'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
 ];
 
 const PRIVATE_PAGES = [
